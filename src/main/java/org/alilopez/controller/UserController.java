@@ -106,6 +106,20 @@ public class UserController {
         }
     }
 
+    public void updateAvatar(Context ctx) {
+        try {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            User user = ctx.bodyAsClass(User.class);
+            user.setIdUsuario(id); // Asegúrate de que el ID en la URL y en el objeto coincidan
+            boolean updated = userService.updateAvatar(user);
+            if (updated) {
+                ctx.status(HttpStatus.OK).result("Avatar actualizado");
+            }
+        } catch (Exception e) {
+            ctx.status(HttpStatus.BAD_REQUEST).result("Error al actualizar avatar");
+        }
+    }
+
     public void delete(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));

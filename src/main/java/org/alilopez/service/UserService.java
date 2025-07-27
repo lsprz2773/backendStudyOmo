@@ -39,4 +39,8 @@ public class UserService {
     public boolean deleteUser(int id) throws SQLException {
         return userRepo.delete(id);
     }
+
+    public boolean updateAvatar(User user) throws SQLException {
+        return userRepo.updateAvatar(user);
+    }
 }

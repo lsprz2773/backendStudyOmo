@@ -77,6 +77,17 @@ public class UserRepository {
         }
     }
 
+    public boolean updateAvatar(User user) throws SQLException {
+        String query = "UPDATE usuario SET avatar = ? WHERE idUsuario = ?";
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, user.getAvatar());
+            stmt.setInt(2, user.getIdUsuario());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public boolean delete(int idUser) throws SQLException {
         String query = "DELETE FROM usuario WHERE idUsuario = ?";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();

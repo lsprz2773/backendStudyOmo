@@ -16,6 +16,7 @@ public class UserRoutes {
         app.post("/usuarios/login", userController::loginUser);
         // Ejemplo de más rutas:
         app.put("/usuarios/{id}", userController::update);
+        app.put("/usuarios/{id}/avatar", userController::updateAvatar);
         app.delete("/usuarios/{id}", userController::delete);
     }
 }
