@@ -71,6 +71,7 @@ public class ObjetivoService {
         // Crear sesión
         Sesion sesion = new Sesion();
         sesion.setFechaCreacion(LocalDateTime.now());
+        sesion.setIdUsuario(data.idUsuario);
         sesion.setDuracionReal(0);
         sesion.setDescansoReal(0);
         sesion.setIntentos(0);
