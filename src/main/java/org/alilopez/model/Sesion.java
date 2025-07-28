@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class Sesion {
     private int idSesion;
+    private int idUsuario;
     private LocalDateTime fechaCreacion;
     private int duracionReal;
     private int descansoReal;
@@ -65,5 +66,13 @@ public class Sesion {
 
     public void setPomodoros(int pomodoros) {
         this.pomodoros = pomodoros;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }

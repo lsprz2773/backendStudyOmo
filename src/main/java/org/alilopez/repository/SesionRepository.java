@@ -20,6 +20,7 @@ public class SesionRepository {
             while (rs.next()) {
                 Sesion p = new Sesion();
                 p.setIdSesion(rs.getInt("idSesion"));
+                p.setIdUsuario(rs.getInt("idUsuario"));
                 p.setFechaCreacion(rs.getTimestamp("fechaCreacion").toLocalDateTime());
                 p.setDuracionReal(rs.getInt("duracionReal"));
                 p.setDescansoReal(rs.getInt("descansoReal"));
@@ -43,6 +44,7 @@ public class SesionRepository {
                 if (rs.next()) {
                     Sesion p = new Sesion();
                     p.setIdSesion(rs.getInt("idSesion"));
+                    p.setIdUsuario(rs.getInt("idUsuario"));
                     p.setFechaCreacion(rs.getTimestamp("fechaCreacion").toLocalDateTime());
                     p.setDuracionReal(rs.getInt("duracionReal"));
                     p.setDescansoReal(rs.getInt("descansoReal"));
@@ -57,16 +59,17 @@ public class SesionRepository {
     }
 
     public int save(Sesion sesion) throws SQLException {
-        String query = "INSERT INTO sesion (fechaCreacion, duracionReal, descansoReal, intentos, estado, pomodoros) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO sesion (idUsuario, fechaCreacion, duracionReal, descansoReal, intentos, estado, pomodoros) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setTimestamp(1, Timestamp.valueOf(sesion.getFechaCreacion()));
-            stmt.setInt(2, sesion.getDuracionReal());
-            stmt.setInt(3, sesion.getDescansoReal());
-            stmt.setInt(4, sesion.getIntentos());
-            stmt.setString(5, sesion.getEstado());
-            stmt.setInt(6, sesion.getPomodoros());
+            stmt.setInt(1, sesion.getIdUsuario());
+            stmt.setTimestamp(2, Timestamp.valueOf(sesion.getFechaCreacion()));
+            stmt.setInt(3, sesion.getDuracionReal());
+            stmt.setInt(4, sesion.getDescansoReal());
+            stmt.setInt(5, sesion.getIntentos());
+            stmt.setString(6, sesion.getEstado());
+            stmt.setInt(7, sesion.getPomodoros());
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {

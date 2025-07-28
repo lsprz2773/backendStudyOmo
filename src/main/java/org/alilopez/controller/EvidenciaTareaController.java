@@ -73,7 +73,7 @@ public class EvidenciaTareaController {
             evidencia.setIdUsuario(idUsuario);
             evidencia.setFileURL("evidencias/tareas/" + nombreArchivo); // URL correcta
             evidencia.setFechaEnvio(LocalDateTime.now());
-            evidencia.setEstado("pendiente"); // Estado inicial de la evidencia
+            evidencia.setEstado("entregada"); // Estado inicial de la evidencia
 
             // Guardar la evidencia en la base de datos
             evidenciaTareaService.agregarEvidencia(evidencia);

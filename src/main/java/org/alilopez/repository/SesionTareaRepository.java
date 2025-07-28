@@ -17,4 +17,16 @@ public class SesionTareaRepository {
             stmt.executeUpdate();
         }
     }
+
+    public boolean deleteSesion(int idSesion, int idTarea) throws SQLException {
+        String query = "DELETE FROM sesion_tarea WHERE idSesion = ? AND idTarea = ?";
+
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idSesion);
+            stmt.setInt(2, idTarea);
+            return stmt.executeUpdate() > 0;
+        }
+    }
 }

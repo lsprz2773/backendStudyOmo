@@ -25,16 +25,10 @@ public class AppModule {
 
     public static TareaRoutes initTarea() {
         TareaRepository tareaRepository = new TareaRepository();
-        SesionRepository sesionRepository = new SesionRepository();
-        SesionTareaRepository sesionTareaRepository = new SesionTareaRepository();
-        SesionGrupoRepository sesionGrupoRepository = new SesionGrupoRepository();
         UsuarioGrupoRepository usuarioGrupoRepository = new UsuarioGrupoRepository();
 
         TareaService tareaService = new TareaService(
                 tareaRepository,
-                sesionRepository,
-                sesionTareaRepository,
-                sesionGrupoRepository,
                 usuarioGrupoRepository
         );
 
@@ -60,8 +54,9 @@ public class AppModule {
 
     public static SesionRoutes initSesion() {
         SesionRepository sesionRepository = new SesionRepository();
+        SesionTareaRepository sesionTareaRepository = new SesionTareaRepository();
         SesionService sesionService = new SesionService(sesionRepository);
-        SesionController sesionController = new SesionController(sesionService);
+        SesionController sesionController = new SesionController(sesionService,sesionTareaRepository);
         return new SesionRoutes(sesionController);
     }
 

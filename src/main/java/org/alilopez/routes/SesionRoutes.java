@@ -16,6 +16,7 @@ public class SesionRoutes {
         app.get("/sesiones/{id}", sesionController::getById);
         app.put("/sesiones/{id}", sesionController::update);
         app.delete("/sesiones/{id}", sesionController::delete);
+        app.post("/sesiones/tarea", sesionController::createSesionTarea);
 
         // Ejemplo de más rutas:
         //app.put("/sesion/:id", sesionController::update);

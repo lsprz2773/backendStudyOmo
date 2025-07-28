@@ -31,6 +31,10 @@ public class SesionService {
         sesionRepository.save(sesion);
     }
 
+    public int createSesionWithId(Sesion sesion) throws SQLException {
+        return sesionRepository.save(sesion);
+    }
+
     public boolean updateSesion(Sesion sesion) throws SQLException {
         boolean updated = sesionRepository.update(sesion);
 

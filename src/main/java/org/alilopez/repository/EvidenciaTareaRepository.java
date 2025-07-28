@@ -9,7 +9,7 @@ public class EvidenciaTareaRepository {
 
     // Guardar la evidencia de la tarea
     public void save(EvidenciaTarea evidencia) throws SQLException {
-        String query = "INSERT INTO evidencia_tarea (idTarea, idUsuario, fileURL, fechaEnvio, estadoEntrega) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO evidencia_tarea (idTarea, idUsuario, fileURL, estadoEntrega) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -17,8 +17,7 @@ public class EvidenciaTareaRepository {
             stmt.setInt(1, evidencia.getIdTarea());
             stmt.setInt(2, evidencia.getIdUsuario());
             stmt.setString(3, evidencia.getFileURL());
-            stmt.setTimestamp(4, Timestamp.valueOf(evidencia.getFechaEnvio()));
-            stmt.setString(5, evidencia.getEstado()); // Usando ENUM (String)
+            stmt.setString(4, evidencia.getEstado()); // Usando ENUM (String)
             stmt.executeUpdate();
         }
     }

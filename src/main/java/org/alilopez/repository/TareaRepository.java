@@ -40,7 +40,7 @@ public class TareaRepository {
 
     public Tarea findByIdTarea(int idTarea) throws SQLException {
         Tarea tarea = null;
-        String query = "SELECT t.* FROM tarea t JOIN sesion_tarea st ON t.idTarea = st.idTarea JOIN sesion s ON st.idSesion = s.idSesion WHERE t.idTarea = ?";
+        String query = "SELECT * FROM tarea WHERE idTarea = ?";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idTarea);

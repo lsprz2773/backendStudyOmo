@@ -46,7 +46,8 @@ public class TareaController {
                 ctx.status(HttpStatus.NOT_FOUND).result("Tarea no encontrada");
             }
         } catch (Exception e) {
-            ctx.status(404).result("Error al obtener tarea");
+            e.printStackTrace();
+            ctx.status(500).result("Error de servidor");
         }
     }
 
@@ -59,7 +60,7 @@ public class TareaController {
             int idGrupo = Integer.parseInt(ctx.formParam("idGrupo"));
             int duracionPomodoro = Integer.parseInt(ctx.formParam("duracionPomodoro"));
             int duracionDescanso = Integer.parseInt(ctx.formParam("duracionDescanso"));
-            int intentos = Integer.parseInt(ctx.formParam("intentos"));
+            int totalPomodoros = Integer.parseInt(ctx.formParam("intentos"));
             UploadedFile archivo = ctx.uploadedFile("recurso");
 
             // Parsear fecha
@@ -87,19 +88,21 @@ public class TareaController {
                 recursoURL = "recursos/tareas/" + nombreArchivo;
             }
 
-            // Crear el request
-            CrearTareaRequest data = new CrearTareaRequest();
-            data.setTitulo(titulo);
-            data.setDescripcion(descripcion);
-            data.setRecursoURL(recursoURL);
-            data.setFechaEntrega(fechaEntrega);
-            data.setIdGrupo(idGrupo);
-            data.setDuracionPomodoro(duracionPomodoro);
-            data.setDuracionDescanso(duracionDescanso);
-            data.setIntentos(intentos);
+            // Crear el objeto tarea
+
+            Tarea tarea = new Tarea();
+            tarea.setTitulo(titulo);
+            tarea.setDescripcion(descripcion);
+            tarea.setRecursoURL(recursoURL);
+            tarea.setFechaEntrega(fechaEntrega);
+            tarea.setIdGrupo(idGrupo);
+            tarea.setTotalPomodoros(totalPomodoros);
+            tarea.setDuracionPomodoro(duracionPomodoro);
+            tarea.setDuracionDescanso(duracionDescanso);
+
 
             // Crear la tarea
-            tareaService.crearTareaConSesion(data);
+            tareaService.createTarea(tarea);
 
             // Responder con un mensaje de éxito
             ctx.status(201).result("Tarea creada correctamente.");

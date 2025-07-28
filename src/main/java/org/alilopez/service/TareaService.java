@@ -12,16 +12,10 @@ import java.util.List;
 
 public class TareaService {
     private final TareaRepository tareaRepository;
-    private final SesionRepository sesionRepository;
-    private final SesionTareaRepository sesionTareaRepository;
-    private final SesionGrupoRepository sesionGrupoRepository;
     private final UsuarioGrupoRepository usuarioGrupoRepository;
 
-    public TareaService(TareaRepository tareaRepository, SesionRepository sesionRepository, SesionTareaRepository sesionTareaRepository, SesionGrupoRepository sesionGrupoRepository, UsuarioGrupoRepository usuarioGrupoRepository) {
+    public TareaService(TareaRepository tareaRepository, UsuarioGrupoRepository usuarioGrupoRepository) {
         this.tareaRepository = tareaRepository;
-        this.sesionRepository = sesionRepository;
-        this.sesionTareaRepository = sesionTareaRepository;
-        this.sesionGrupoRepository = sesionGrupoRepository;
         this.usuarioGrupoRepository = usuarioGrupoRepository;
     }
 
@@ -47,20 +41,6 @@ public class TareaService {
 
     public List<Tarea> getTareasByIdGrupo(int idGrupo) throws SQLException {
         return tareaRepository.findTareasByIdGrupo(idGrupo);
-    }
-
-
-    public void crearTareaConSesion(CrearTareaRequest data) throws SQLException {
-        // Crear tarea
-        Tarea tarea = new Tarea();
-        tarea.setTitulo(data.titulo);
-        tarea.setDescripcion(data.descripcion);
-        tarea.setRecursoURL(data.recursoURL);
-        tarea.setFechaCreacion(LocalDateTime.now());
-        tarea.setFechaEntrega(data.fechaEntrega);
-        tarea.setIdGrupo(data.idGrupo);
-        int idTarea = tareaRepository.save(tarea);
-
     }
 
     public List<UsuarioGrupo> getAlumnosPorTarea(int idTarea) throws SQLException {
