@@ -112,7 +112,10 @@ public class ObjetivoRepository {
     // Obtener los objetivos de un usuario específico
     public List<Objetivo> findObjetivosByIdUser(int idUsuario) throws SQLException {
         List<Objetivo> objetivos = new ArrayList<>();
+        Objetivo o = null;
+        int idObjetivo = 0;
         String query = "SELECT * FROM objetivo WHERE idUsuario = ?";
+        String queryIdSesion = "SELECT idSesion FROM sesion_objetivo WHERE idObjetivo    = ?";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -120,8 +123,9 @@ public class ObjetivoRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Objetivo o = new Objetivo();
+                    o = new Objetivo();
                     o.setIdObjetivo(rs.getInt("idObjetivo"));
+                    idObjetivo = rs.getInt("idObjetivo");
                     o.setIdUsuario(rs.getInt("idUsuario"));
                     o.setNombre(rs.getString("nombre"));
                     o.setDescripcion(rs.getString("descripcion"));
@@ -130,9 +134,24 @@ public class ObjetivoRepository {
                     o.setDuracionPomodoro(rs.getFloat("duracionPomodoro"));
                     o.setDuracionDescanso(rs.getFloat("duracionDescanso"));
 
+                    try (Connection conn2 = DatabaseConfig.getDataSource().getConnection();
+                         PreparedStatement stmt2 = conn2.prepareStatement(queryIdSesion)) {
+
+                        stmt2.setInt(1, idObjetivo);
+                        try (ResultSet rs2 = stmt2.executeQuery()) {
+                            if (rs2.next()) {
+                                o.setIdSesion(rs2.getInt("idSesion"));
+                            } else {
+                                o.setIdSesion(-1); // O null si lo tienes como `Integer`
+                            }
+                        }
+                    }
+
                     objetivos.add(o);
+
                 }
             }
+
             return objetivos;
         }
     }
@@ -172,11 +191,11 @@ public class ObjetivoRepository {
     // Obtener los objetivos no entregados
     public List<Objetivo> findObjetivosNoEntregados(int idUsuario) throws SQLException {
         List<Objetivo> objetivos = new ArrayList<>();
-        String query = "SELECT o.*" +
+        String query = "SELECT o.*, so.idSesion " +
                 "FROM objetivo o " +
-                "LEFT JOIN evidencia_objetivo eo ON o.idObjetivo = eo.idObjetivo AND eo.idUsuario = ? " +
                 "JOIN sesion_objetivo so ON o.idObjetivo = so.idObjetivo " +
                 "JOIN sesion s ON so.idSesion = s.idSesion " +
+                "LEFT JOIN evidencia_objetivo eo ON o.idObjetivo = eo.idObjetivo AND eo.idUsuario = ? " +
                 "WHERE o.idUsuario = ? AND eo.idObjetivo IS NULL";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -195,7 +214,7 @@ public class ObjetivoRepository {
                     o.setFechaCreacion(rs.getTimestamp("fechaCreacion").toLocalDateTime());
                     o.setDuracionPomodoro(rs.getFloat("duracionPomodoro"));
                     o.setDuracionDescanso(rs.getFloat("duracionDescanso"));
-
+                    o.setIdSesion(rs.getInt("idSesion"));
                     objetivos.add(o);
                 }
             }

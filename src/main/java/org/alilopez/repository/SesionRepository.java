@@ -80,7 +80,7 @@ public class SesionRepository {
     }
 
     public boolean update(Sesion sesion) throws SQLException {
-        String query = "UPDATE sesion SET duracionReal = ?, descansoReal = ?, intentos = ?, estado = ? WHERE idSesion = ?";
+        String query = "UPDATE sesion SET duracionReal = ?, descansoReal = ?, intentos = ?, estado = ?, pomodoros = ? WHERE idSesion = ?";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -88,7 +88,8 @@ public class SesionRepository {
             stmt.setInt(2, sesion.getDescansoReal());
             stmt.setInt(3, sesion.getIntentos());
             stmt.setString(4, sesion.getEstado());
-            stmt.setInt(5, sesion.getIdSesion());
+            stmt.setInt(5, sesion.getPomodoros());
+            stmt.setInt(6, sesion.getIdSesion());
             return stmt.executeUpdate() > 0;
         }
     }

@@ -11,6 +11,7 @@ public class Objetivo {
     private LocalDateTime fechaCreacion;
     private float duracionPomodoro;
     private float duracionDescanso;
+    private int idSesion;
 
     public int getIdObjetivo() {
         return idObjetivo;
@@ -74,5 +75,13 @@ public class Objetivo {
 
     public void setDuracionDescanso(float duracionDescanso) {
         this.duracionDescanso = duracionDescanso;
+    }
+
+    public int getIdSesion() {
+        return idSesion;
+    }
+
+    public void setIdSesion(int idSesion) {
+        this.idSesion = idSesion;
     }
 }

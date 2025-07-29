@@ -63,7 +63,6 @@ public class ObjetivoService {
         obj.setNombre(data.nombre);
         obj.setDescripcion(data.descripcion);
         obj.setTotalPomodoros(data.totalPomodoros);
-        obj.setFechaCreacion(LocalDateTime.now());
         obj.setDuracionPomodoro(data.duracionPomodoro);
         obj.setDuracionDescanso(data.duracionDescanso);
         int idObjetivo = objetivoRepository.save(obj);
