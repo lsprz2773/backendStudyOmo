@@ -17,9 +17,10 @@ public class EstadisticasService {
         int objetivos = repo.contarObjetivosAlcanzados(idUsuario);
         int fallos = repo.contarIntentosFallidos(idUsuario);
         int tiempo = repo.calcularTiempoTotalMinutos(idUsuario);
-
         return new EstadisticasDTO(pomodoros, objetivos, fallos, tiempo);
     }
+
+
 
 
     public int obtenerTiempoTotalMinutos(int idUsuario) {

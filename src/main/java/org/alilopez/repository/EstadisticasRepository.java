@@ -1,4 +1,5 @@
 package org.alilopez.repository;
+
 import java.time.LocalDate;
 import java.util.Map;
 import org.alilopez.config.DatabaseConfig;
@@ -8,25 +9,28 @@ import java.util.HashMap;
 public class EstadisticasRepository {
 
     public int contarPomodorosTerminados(int idUsuario) {
-        String sql = "SELECT COUNT(*) FROM Pomodoro WHERE idUsuario = ? AND estado = 'completado'";
-        try {
-            Connection conn = DatabaseConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        String sql = """
+            SELECT SUM(s.pomodoros) FROM sesion s
+            JOIN sesion_objetivo so ON s.idSesion = so.idSesion
+            JOIN objetivo o ON so.idObjetivo = o.idObjetivo
+            WHERE o.idUsuario = ? AND s.estado = 'completado'
+        """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idUsuario);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) return rs.getInt(1);
-            rs.close();
-            stmt.close();
-            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
-
     public int contarObjetivosAlcanzados(int idUsuario) {
-        String sql = "SELECT COUNT(*) FROM Evidencia_Objetivo eo WHERE eo.idUsuario = ? AND eo.estado = 1";
+        String sql = """
+            SELECT COUNT(*) FROM evidencia_objetivo
+            WHERE idUsuario = ? AND estado = 1
+        """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idUsuario);
@@ -39,7 +43,10 @@ public class EstadisticasRepository {
     }
 
     public int contarIntentosFallidos(int idUsuario) {
-        String sql = "SELECT COUNT(*) FROM Evidencia_Tarea et JOIN Tarea t ON et.idTarea = t.idTarea WHERE et.idUsuario = ? AND et.estadoEntrega = 0";
+        String sql = """
+            SELECT COUNT(*) FROM evidencia_tarea
+            WHERE idUsuario = ? AND estadoEntrega = 'no_entregada'
+        """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idUsuario);
@@ -52,7 +59,12 @@ public class EstadisticasRepository {
     }
 
     public int calcularTiempoTotalMinutos(int idUsuario) {
-        String sql = "SELECT SUM(p.duracion) FROM Pomodoro p WHERE p.idUsuario = ? AND p.estado = 'completado'";
+        String sql = """
+            SELECT SUM(s.duracionReal / 60) FROM sesion s
+            JOIN sesion_objetivo so ON s.idSesion = so.idSesion
+            JOIN objetivo o ON so.idObjetivo = o.idObjetivo
+            WHERE o.idUsuario = ? AND s.estado = 'completado'
+        """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idUsuario);
@@ -66,14 +78,14 @@ public class EstadisticasRepository {
 
     public Map<LocalDate, Integer> obtenerTiempoPorDia(int idUsuario) {
         String sql = """
-        SELECT DATE(p.fechaCreacion) AS fecha, SUM(p.duracionReal / 60) AS totalMinutos
-        FROM Sesion p
-        JOIN Sesion_Objetivo so ON p.idSesion = so.idSesion
-        JOIN Objetivo o ON so.idObjetivo = o.idObjetivo
-        WHERE o.idUsuario = ? AND p.estado = 'completado'
-        AND p.fechaCreacion >= CURDATE() - INTERVAL 6 DAY
-        GROUP BY fecha
-    """;
+            SELECT DATE(s.fechaCreacion) AS fecha, SUM(s.duracionReal / 60) AS totalMinutos
+            FROM sesion s
+            JOIN sesion_objetivo so ON s.idSesion = so.idSesion
+            JOIN objetivo o ON so.idObjetivo = o.idObjetivo
+            WHERE o.idUsuario = ? AND s.estado = 'completado'
+            AND s.fechaCreacion >= CURDATE() - INTERVAL 6 DAY
+            GROUP BY fecha
+        """;
 
         Map<LocalDate, Integer> resultado = new HashMap<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -90,16 +102,17 @@ public class EstadisticasRepository {
         }
         return resultado;
     }
+
     public Map<LocalDate, Integer> obtenerPomodorosPorDia(int idUsuario) {
         String sql = """
-        SELECT DATE(s.fechaCreacion) AS fecha, SUM(s.pomodoros) AS totalPomodoros
-        FROM Sesion s
-        JOIN Sesion_Objetivo so ON s.idSesion = so.idSesion
-        JOIN Objetivo o ON so.idObjetivo = o.idObjetivo
-        WHERE o.idUsuario = ? AND s.estado = 'completado'
-        AND s.fechaCreacion >= CURDATE() - INTERVAL 6 DAY
-        GROUP BY fecha
-    """;
+            SELECT DATE(s.fechaCreacion) AS fecha, SUM(s.pomodoros) AS totalPomodoros
+            FROM sesion s
+            JOIN sesion_objetivo so ON s.idSesion = so.idSesion
+            JOIN objetivo o ON so.idObjetivo = o.idObjetivo
+            WHERE o.idUsuario = ? AND s.estado = 'completado'
+            AND s.fechaCreacion >= CURDATE() - INTERVAL 6 DAY
+            GROUP BY fecha
+        """;
 
         Map<LocalDate, Integer> resultado = new HashMap<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -119,12 +132,12 @@ public class EstadisticasRepository {
 
     public Map<LocalDate, Integer> obtenerObjetivosPorDia(int idUsuario) {
         String sql = """
-        SELECT DATE(fechaEnvio) AS fecha, COUNT(*) AS total
-        FROM Evidencia_Objetivo
-        WHERE idUsuario = ? 
-        AND fechaEnvio >= CURDATE() - INTERVAL 6 DAY
-        GROUP BY fecha
-    """;
+            SELECT DATE(fechaEnvio) AS fecha, COUNT(*) AS total
+            FROM evidencia_objetivo
+            WHERE idUsuario = ? 
+            AND fechaEnvio >= CURDATE() - INTERVAL 6 DAY
+            GROUP BY fecha
+        """;
 
         Map<LocalDate, Integer> resultado = new HashMap<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -145,12 +158,12 @@ public class EstadisticasRepository {
     public Map<LocalDate, Integer> obtenerFallosPorDia(int idUsuario) {
         String sql = """
             SELECT DATE(fechaEnvio) AS fecha, COUNT(*) AS total
-            FROM Evidencia_Tarea
+            FROM evidencia_tarea
             WHERE idUsuario = ? 
             AND estadoEntrega = 'no_entregada'
             AND fechaEnvio >= CURDATE() - INTERVAL 6 DAY
             GROUP BY fecha
-            """;
+        """;
         Map<LocalDate, Integer> resultado = new HashMap<>();
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -166,6 +179,4 @@ public class EstadisticasRepository {
         }
         return resultado;
     }
-
-
 }
