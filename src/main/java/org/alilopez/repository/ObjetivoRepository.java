@@ -159,12 +159,11 @@ public class ObjetivoRepository {
     // Obtener los objetivos entregados (con evidencia)
     public List<Objetivo> findObjetivosEntregados(int idUsuario) throws SQLException {
         List<Objetivo> objetivos = new ArrayList<>();
-        String query = "SELECT o.*" +
+        String query = "SELECT o.*, s.idSesion " +
                 "FROM objetivo o " +
-                "JOIN evidencia_objetivo eo ON o.idObjetivo = eo.idObjetivo " +
                 "JOIN sesion_objetivo so ON o.idObjetivo = so.idObjetivo " +
                 "JOIN sesion s ON so.idSesion = s.idSesion " +
-                "WHERE eo.idUsuario = ? AND eo.estado = 1";
+                "WHERE o.idUsuario = ? AND s.estado = 'completado'";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -195,13 +194,11 @@ public class ObjetivoRepository {
                 "FROM objetivo o " +
                 "JOIN sesion_objetivo so ON o.idObjetivo = so.idObjetivo " +
                 "JOIN sesion s ON so.idSesion = s.idSesion " +
-                "LEFT JOIN evidencia_objetivo eo ON o.idObjetivo = eo.idObjetivo AND eo.idUsuario = ? " +
-                "WHERE o.idUsuario = ? AND eo.idObjetivo IS NULL";
+                "WHERE o.idUsuario = ? AND s.estado IN ('iniciado', 'no_iniciadoPomodoro', 'fallido')";;
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, idUsuario);
-            stmt.setInt(2, idUsuario);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
